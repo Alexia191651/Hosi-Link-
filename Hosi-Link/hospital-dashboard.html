@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosi-Link - Hospital Staff Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Hosi-Link</h2>
+                <p>Hospital Staff Dashboard</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="showSection('dashboard')">Dashboard</a>
+                <a href="#" onclick="showSection('icu-beds')">ICU Bed Management</a>
+                <a href="#" onclick="showSection('blood-inventory')">Blood Bank Inventory</a>
+                <a href="#" onclick="showSection('emergency-requests')">Emergency Service Requests</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="main-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="user-info">
+                    <span id="user-name">Hospital Staff</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Overview Section -->
+            <section id="dashboard" class="section">
+                <div class="section-header">
+                    <h2>ICU Bed Availability</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card blue">
+                        <div class="card-header">
+                            <h3>Occupied Beds</h3>
+                        </div>
+                        <div class="card-value">15</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card green">
+                        <div class="card-header">
+                            <h3>Available Beds</h3>
+                        </div>
+                        <div class="card-value">5</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card orange">
+                        <div class="card-header">
+                            <h3>Under Maintenance</h3>
+                        </div>
+                        <div class="card-value">2</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Blood Bank Inventory</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card red">
+                        <div class="card-header">
+                            <h3>A+</h3>
+                        </div>
+                        <div class="card-value">50 bags</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card red">
+                        <div class="card-header">
+                            <h3>O-</h3>
+                        </div>
+                        <div class="card-value">30 bags</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card red">
+                        <div class="card-header">
+                            <h3>B+</h3>
+                        </div>
+                        <div class="card-value">45 bags</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card red">
+                        <div class="card-header">
+                            <h3>AB-</h3>
+                        </div>
+                        <div class="card-value">10 bags</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Emergency Service Requests</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card orange">
+                        <div class="card-header">
+                            <h3>Pending Requests</h3>
+                        </div>
+                        <div class="card-value">7</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ICU Bed Management Section -->
+            <section id="icu-beds" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2>ICU Bed Management</h2>
+                    <button class="card-btn" style="background: #667eea; color: white;" onclick="openBedModal()">Add New Bed</button>
+                </div>
+                <div class="bed-grid" id="bed-grid">
+                    <!-- Bed cards will be generated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Blood Bank Inventory Section -->
+            <section id="blood-inventory" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2>Blood Bank Inventory</h2>
+                    <button class="card-btn" style="background: #667eea; color: white;" onclick="openBloodModal()">Update Inventory</button>
+                </div>
+                <div class="blood-grid" id="blood-grid">
+                    <!-- Blood cards will be generated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Emergency Service Requests Section -->
+            <section id="emergency-requests" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2>Emergency Service Requests</h2>
+                    <button class="card-btn" style="background: #667eea; color: white;" onclick="openEmergencyModal()">New Request</button>
+                </div>
+                <div class="emergency-columns">
+                    <div class="emergency-column incoming">
+                        <h3>Incoming Requests</h3>
+                        <div id="incoming-requests">
+                            <!-- Request cards will be generated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="emergency-column progress">
+                        <h3>In Progress</h3>
+                        <div id="progress-requests">
+                            <!-- Request cards will be generated by JavaScript -->
+                        </div>
+                    </div>
+                    <div class="emergency-column completed">
+                        <h3>Completed</h3>
+                        <div id="completed-requests">
+                            <!-- Request cards will be generated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Bed Status Modal -->
+    <div id="bed-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Bed Status</h3>
+                <button class="modal-close" onclick="closeBedModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="bed-number">Bed Number</label>
+                <input type="text" id="bed-number" placeholder="e.g., Bed 101">
+                <label for="bed-status">Status</label>
+                <select id="bed-status">
+                    <option value="available">Available</option>
+                    <option value="occupied">Occupied</option>
+                    <option value="maintenance">Under Maintenance</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeBedModal()">Cancel</button>
+                <button class="btn-confirm" onclick="saveBedStatus()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Blood Inventory Modal -->
+    <div id="blood-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Update Blood Inventory</h3>
+                <button class="modal-close" onclick="closeBloodModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="blood-type">Blood Type</label>
+                <select id="blood-type">
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+                <label for="blood-quantity">Quantity (bags)</label>
+                <input type="number" id="blood-quantity" placeholder="Enter quantity">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeBloodModal()">Cancel</button>
+                <button class="btn-confirm" onclick="saveBloodInventory()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency Request Modal -->
+    <div id="emergency-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>New Emergency Request</h3>
+                <button class="modal-close" onclick="closeEmergencyModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="patient-name">Patient Name</label>
+                <input type="text" id="patient-name" placeholder="Enter patient name">
+                <label for="patient-reason">Reason</label>
+                <input type="text" id="patient-reason" placeholder="Enter reason for request">
+                <label for="required-blood">Required Blood Type</label>
+                <select id="required-blood">
+                    <option value="">Select blood type</option>
+                    <option value="A+">A+</option>
+                    <option value="A-">A-</option>
+                    <option value="B+">B+</option>
+                    <option value="B-">B-</option>
+                    <option value="AB+">AB+</option>
+                    <option value="AB-">AB-</option>
+                    <option value="O+">O+</option>
+                    <option value="O-">O-</option>
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeEmergencyModal()">Cancel</button>
+                <button class="btn-confirm" onclick="saveEmergencyRequest()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="hospital-dashboard.js"></script>
+</body>
+</html>
