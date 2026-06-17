@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosi-Link - Login</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <div class="login-header">
+                <h1>Hosi-Link</h1>
+                <p>Hospital Resource Management System</p>
+            </div>
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required placeholder="Enter your username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required placeholder="Enter your password">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" required>
+                        <option value="">Select your role</option>
+                        <option value="hospital_staff">Hospital Staff</option>
+                        <option value="blood_bank_staff">Blood Bank Staff</option>
+                        <option value="paramedic">Paramedic / Ambulance</option>
+                        <option value="system_admin">System Admin</option>
+                    </select>
+                </div>
+                <button type="submit" class="login-btn">Login</button>
+                <p id="error-message" class="error-message"></p>
+            </form>
+            <div class="login-footer">
+                <p>Hosi-Link - Connecting Healthcare Facilities Across Kenya</p>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

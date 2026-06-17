@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hosi-Link - System Admin Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Hosi-Link</h2>
+                <p>System Admin Dashboard</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="active" onclick="showSection('dashboard')">Dashboard</a>
+                <a href="#" onclick="showSection('audit-logs')">Audit Logs</a>
+                <a href="#" onclick="showSection('user-management')">User Management</a>
+                <a href="#" onclick="showSection('system-backup')">System Backup</a>
+            </nav>
+            <div class="sidebar-footer">
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="main-header">
+                <h1 id="page-title">Dashboard</h1>
+                <div class="user-info">
+                    <span id="user-name">System Admin</span>
+                </div>
+            </div>
+
+            <!-- Dashboard Overview Section -->
+            <section id="dashboard" class="section">
+                <div class="section-header">
+                    <h2>System Overview</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card blue">
+                        <div class="card-header">
+                            <h3>Total Users</h3>
+                        </div>
+                        <div class="card-value">24</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card green">
+                        <div class="card-header">
+                            <h3>Active Sessions</h3>
+                        </div>
+                        <div class="card-value">8</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card orange">
+                        <div class="card-header">
+                            <h3>Pending Requests</h3>
+                        </div>
+                        <div class="card-value">5</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card red">
+                        <div class="card-header">
+                            <h3>System Alerts</h3>
+                        </div>
+                        <div class="card-value">2</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>System Status</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card green">
+                        <div class="card-header">
+                            <h3>Database Status</h3>
+                        </div>
+                        <div class="card-value" style="font-size: 1.5rem;">Online</div>
+                        <button class="card-btn">Check Status</button>
+                    </div>
+                    <div class="card green">
+                        <div class="card-header">
+                            <h3>WebSocket Server</h3>
+                        </div>
+                        <div class="card-value" style="font-size: 1.5rem;">Running</div>
+                        <button class="card-btn">Check Status</button>
+                    </div>
+                    <div class="card green">
+                        <div class="card-header">
+                            <h3>Last Backup</h3>
+                        </div>
+                        <div class="card-value" style="font-size: 1.5rem;">2 hours ago</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Audit Logs Section -->
+            <section id="audit-logs" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2>Audit Logs</h2>
+                    <div>
+                        <button class="card-btn" style="background: #667eea; color: white; margin-right: 10px;" onclick="exportLogs()">Export Logs</button>
+                        <button class="card-btn" style="background: #95a5a6; color: white;" onclick="clearLogs()">Clear Old Logs</button>
+                    </div>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <input type="text" id="log-search" placeholder="Search logs..." style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; width: 300px;" onkeyup="filterLogs()">
+                    <select id="log-filter" style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 6px; margin-left: 10px;" onchange="filterLogs()">
+                        <option value="">All Actions</option>
+                        <option value="login">Login</option>
+                        <option value="update">Update</option>
+                        <option value="delete">Delete</option>
+                        <option value="create">Create</option>
+                    </select>
+                </div>
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>Log ID</th>
+                            <th>User ID</th>
+                            <th>Action Performed</th>
+                            <th>Timestamp</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="audit-logs-table">
+                        <!-- Log rows will be generated by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- User Management Section -->
+            <section id="user-management" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2>User Management</h2>
+                    <button class="card-btn" style="background: #667eea; color: white;" onclick="openUserModal()">Add New User</button>
+                </div>
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Username</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table">
+                        <!-- User rows will be generated by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- System Backup Section -->
+            <section id="system-backup" class="section" style="display: none;">
+                <div class="section-header">
+                    <h2>System Backup</h2>
+                </div>
+                <div class="dashboard-grid">
+                    <div class="card blue">
+                        <div class="card-header">
+                            <h3>Last Full Backup</h3>
+                        </div>
+                        <div class="card-value" style="font-size: 1.5rem;">2024-01-15 14:30</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                    <div class="card green">
+                        <div class="card-header">
+                            <h3>Backup Status</h3>
+                        </div>
+                        <div class="card-value" style="font-size: 1.5rem;">Success</div>
+                        <button class="card-btn">Check Status</button>
+                    </div>
+                    <div class="card orange">
+                        <div class="card-header">
+                            <h3>Storage Used</h3>
+                        </div>
+                        <div class="card-value" style="font-size: 1.5rem;">2.4 GB</div>
+                        <button class="card-btn">View Details</button>
+                    </div>
+                </div>
+
+                <div class="section-header">
+                    <h2>Backup Actions</h2>
+                </div>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button class="card-btn" style="background: #2ecc71; color: white; padding: 15px 30px; font-size: 1rem;" onclick="performBackup()">Perform Full Backup</button>
+                    <button class="card-btn" style="background: #3498db; color: white; padding: 15px 30px; font-size: 1rem;" onclick="scheduleBackup()">Schedule Backup</button>
+                    <button class="card-btn" style="background: #f39c12; color: white; padding: 15px 30px; font-size: 1rem;" onclick="restoreBackup()">Restore from Backup</button>
+                </div>
+
+                <div class="section-header">
+                    <h2>Backup History</h2>
+                </div>
+                <table class="audit-table">
+                    <thead>
+                        <tr>
+                            <th>Backup ID</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Size</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="backup-history-table">
+                        <!-- Backup rows will be generated by JavaScript -->
+                    </tbody>
+                </table>
+            </section>
+        </main>
+    </div>
+
+    <!-- User Modal -->
+    <div id="user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New User</h3>
+                <button class="modal-close" onclick="closeUserModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <label for="new-username">Username</label>
+                <input type="text" id="new-username" placeholder="Enter username">
+                <label for="new-password">Password</label>
+                <input type="password" id="new-password" placeholder="Enter password">
+                <label for="new-role">Role</label>
+                <select id="new-role">
+                    <option value="hospital_staff">Hospital Staff</option>
+                    <option value="blood_bank_staff">Blood Bank Staff</option>
+                    <option value="paramedic">Paramedic</option>
+                    <option value="system_admin">System Admin</option>
+                </select>
+                <label for="new-name">Full Name</label>
+                <input type="text" id="new-name" placeholder="Enter full name">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeUserModal()">Cancel</button>
+                <button class="btn-confirm" onclick="saveUser()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>
