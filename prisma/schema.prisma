@@ -1,0 +1,264 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PARAMEDIC
+  ICU_MANAGER
+  BLOODBANK_STAFF
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum AlertSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AlertStatus {
+  PENDING
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+enum TransferStatus {
+  PENDING
+  ACCEPTED
+  IN_TRANSIT
+  COMPLETED
+  CANCELLED
+}
+
+enum TransferPriority {
+  ROUTINE
+  URGENT
+  EMERGENCY
+}
+
+enum BedStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  RESERVED
+}
+
+enum BedType {
+  ICU
+  ICCU
+  NICU
+  PICU
+}
+
+enum BloodUnitStatus {
+  AVAILABLE
+  RESERVED
+  USED
+  EXPIRED
+  DISCARDED
+}
+
+enum RhFactor {
+  POSITIVE
+  NEGATIVE
+}
+
+enum BloodRequestStatus {
+  PENDING
+  APPROVED
+  FULFILLED
+  REJECTED
+}
+
+enum BloodRequestUrgency {
+  ROUTINE
+  URGENT
+  EMERGENCY
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  role         UserRole
+  firstName    String
+  lastName     String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  emergencyAlerts    EmergencyAlert[]
+  transferRequests   TransferRequest[] @relation("RequestedBy")
+  bedAssignments     BedAssignment[]
+  bloodRequests      BloodRequest[] @relation("RequestedBy")
+  bloodRequestsFulfilled BloodRequest[] @relation("FulfilledBy")
+  vitalSigns         VitalSigns[]
+}
+
+model Patient {
+  id                String   @id @default(uuid())
+  firstName         String
+  lastName          String
+  dateOfBirth       DateTime
+  gender            Gender
+  bloodType         String?
+  allergies         String[]
+  medicalConditions String[]
+  emergencyContact  String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  emergencyAlerts   EmergencyAlert[]
+  transferRequests  TransferRequest[]
+  bedAssignments    BedAssignment[]
+  bloodRequests     BloodRequest[]
+  vitalSigns        VitalSigns[]
+}
+
+model EmergencyAlert {
+  id          String        @id @default(uuid())
+  patientId   String
+  paramedicId String
+  severity    AlertSeverity
+  location    String
+  description String?
+  status      AlertStatus   @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  patient     Patient       @relation(fields: [patientId], references: [id])
+  paramedic   User          @relation(fields: [paramedicId], references: [id])
+}
+
+model TransferRequest {
+  id            String           @id @default(uuid())
+  patientId     String
+  requestedBy   String
+  assignedBedId String?
+  status        TransferStatus  @default(PENDING)
+  priority      TransferPriority
+  notes         String?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  patient       Patient          @relation(fields: [patientId], references: [id])
+  requestedBy   User             @relation("RequestedBy", fields: [requestedBy], references: [id])
+  assignedBed   ICUBed?          @relation(fields: [assignedBedId], references: [id])
+}
+
+model ICUBed {
+  id           String     @id @default(uuid())
+  bedNumber    String     @unique
+  ward         String
+  bedType      BedType
+  status       BedStatus  @default(AVAILABLE)
+  isAvailable  Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  assignments  BedAssignment[]
+  transfers    TransferRequest[]
+}
+
+model BedAssignment {
+  id            String    @id @default(uuid())
+  bedId         String
+  patientId     String
+  assignedBy    String
+  admissionDate DateTime  @default(now())
+  dischargeDate DateTime?
+  notes         String?
+  createdAt     DateTime  @default(now())
+
+  bed           ICUBed    @relation(fields: [bedId], references: [id])
+  patient       Patient   @relation(fields: [patientId], references: [id])
+  assignedBy    User      @relation(fields: [assignedBy], references: [id])
+}
+
+model BloodUnit {
+  id            String          @id @default(uuid())
+  bloodType     String
+  rhFactor      RhFactor
+  unitNumber    String          @unique
+  volume        Int
+  collectionDate DateTime
+  expiryDate    DateTime
+  status        BloodUnitStatus @default(AVAILABLE)
+  donorId       String?
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  donor         Donor?          @relation(fields: [donorId], references: [id])
+}
+
+model Donor {
+  id           String   @id @default(uuid())
+  firstName    String
+  lastName     String
+  email        String   @unique
+  phone        String
+  bloodType    String
+  rhFactor     RhFactor
+  lastDonation DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  bloodUnits   BloodUnit[]
+}
+
+model BloodRequest {
+  id            String              @id @default(uuid())
+  patientId     String
+  requestedBy   String
+  bloodType     String
+  rhFactor      RhFactor
+  unitsRequired Int
+  urgency       BloodRequestUrgency
+  status        BloodRequestStatus @default(PENDING)
+  notes         String?
+  fulfilledBy   String?
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  patient       Patient             @relation(fields: [patientId], references: [id])
+  requestedBy   User                @relation("RequestedBy", fields: [requestedBy], references: [id])
+  fulfilledBy   User?               @relation("FulfilledBy", fields: [fulfilledBy], references: [id])
+}
+
+model VitalSigns {
+  id                    String    @id @default(uuid())
+  patientId             String
+  recordedBy            String
+  bloodPressureSystolic Int?
+  bloodPressureDiastolic Int?
+  heartRate             Int?
+  temperature           Float?
+  oxygenSaturation      Int?
+  respiratoryRate       Int?
+  recordedAt           DateTime  @default(now())
+
+  patient               Patient   @relation(fields: [patientId], references: [id])
+  recordedBy           User      @relation(fields: [recordedBy], references: [id])
+}
+
+model StockAlert {
+  id              String   @id @default(uuid())
+  bloodType       String
+  rhFactor        RhFactor
+  minimumThreshold Int
+  isEnabled       Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
