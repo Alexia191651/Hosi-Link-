@@ -15,6 +15,6 @@ Open [http://localhost:3000](http://localhost:3000) with your browser.
 
 ## Tech Stack
 - Next.js (JavaScript)
-- PostgreSQL (Prisma ORM)
+- Maria DB
 - NextAuth.js
 - React Context + SWR
